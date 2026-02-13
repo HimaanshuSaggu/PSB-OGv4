@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Status</title>
+
+  <link rel="icon" type="image/png" href="icon.png">
+
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      margin: 0;
+      background: #ffffff;
+      color: #333;
+      line-height: 1.7;
+    }
+
+    nav {
+      background: linear-gradient(to right, #ff8400, #ffac53);
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 15px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: white;
+      padding: 10px 20px;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #37474f;
+    }
+
+    header {
+      background: linear-gradient(to right, #ff8400, #ffac53);
+      color: white;
+      text-align: center;
+      padding: 20px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 2em;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 1.3em;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 220px);
+      gap: 60px;
+      justify-content: center;
+    }
+
+    .circle {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.2em;
+      font-weight: bold;
+      margin: 0 auto;
+      cursor: pointer;
+      border: 4px solid #ffac53;
+      background-color: grey;
+      color: #37474f;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+      position: relative;
+    }
+
+    .circle:hover:not(.locked) {
+      transform: scale(1.08);
+    }
+
+    .active { background-color: #46c646; }
+    .inactive { background-color: grey; }
+    .locked { background-color: red; cursor: not-allowed; }
+
+    .tooltip {
+      position: absolute;
+      background: white;
+      border: 3px solid #ffac53;
+      border-radius: 10px;
+      padding: 10px;
+      width: 160px;
+      text-align: left;
+      font-size: 0.85em;
+      color: #333;
+      display: none;
+      z-index: 500;
+      pointer-events: none;
+    }
+
+    .tooltip.show {
+      display: block;
+    }
+
+    .tooltip img {
+      width: 100%;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+
+    .label {
+      margin-top: 15px;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    /* Notification styling */
+    .notification {
+      position: fixed;
+      background: white;
+      border: 3px solid #ffac53;
+      padding: 15px 20px;
+      min-width: 320px;
+      max-width: 400px;
+      font-family: "Times New Roman", Times, serif;
+      display: none;
+      z-index: 1200;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+      color: black;
+      text-align: center;
+      border-radius: 12px;
+    }
+
+    .notification .notif-heading {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 6px;
+    }
+
+    .notification .notif-subheading {
+      font-weight: normal;
+      font-size: 0.95em;
+    }
+    /* Desktop position */
+    @media (min-width: 769px) {
+      .notification {
+        top: 70px;
+        right: 20px;
+        min-width: 380px;m 
+        max-width: 480px;
+        padding: 18px 25px;
+      }
+    }
+    /* Mobile position */
+    @media (max-width: 768px) {
+      .notification {
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    footer {
+      background-color: #ffb770;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    .link-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .link-grid a {
+      display: inline-block;
+      text-decoration: none;
+      background-color: #fa9b00;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+      font-weight: 500;
+    }
+
+    .link-grid a:hover {
+      background-color: #37474f;
+    }
+
+    footer p {
+      font-size: 0.9em;
+      opacity: 0.85;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 768px) {
+      /* Navbar mobile optimization */
+      nav {
+        padding: 8px 5px;
+        gap: 5px;
+      }
+
+      nav a {
+        padding: 6px 10px;
+        font-size: 0.85em;
+      }
+
+      /* Header mobile optimization */
+      header {
+        padding: 12px 15px;
+      }
+
+      header h1 {
+        font-size: 1.4em;
+        margin-bottom: 3px;
+      }
+
+      header p {
+        font-size: 1.1em;
+      }
+
+      /* Grid mobile optimization - single column */
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .circle {
+        width: 100px;
+        height: 100px;
+        font-size: 1.8em;
+      }
+
+      /* Tooltip positioning for mobile */
+      .tooltip {
+        width: 140px;
+        font-size: 0.75em;
+        left: 50% !important;
+        transform: translateX(-50%);
+        top: 110px !important;
+      }
+
+      .tooltip.show {
+        display: block !important;
+      }
+
+      /* Main content mobile optimization */
+      main {
+        margin: 20px 15px;
+        padding: 15px;
+      }
+
+      /* Disable hover effects on mobile */
+      .circle:hover:not(.locked) {
+        transform: none;
+      }
+
+      .label {
+        font-size: 0.85em;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="notif" class="notification">
+    <div class="notif-heading">⚠️ Sensor C Battery Critical 20%</div>
+    <div class="notif-subheading">Charge Sensor C now - it may shut down soon!</div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="Ourpast.html">Our Past</a>
+    <a href="looting.html">Looting</a>
+    <a href="vandalism.html">Vandalism</a>
+    <a href="protecting.html">Protecting</a>
+    <a href="solution.html">Proposed Solution</a>
+    <a href="live-gallery.html">New Images</a>
+    <a href="sensors.html">Sensor Status</a>
+    <a href="about.html">About Us</a>
+  </nav>
+
+  <header>
+    <h1>Sensor Status</h1>
+    <p>All system sensors data - Interactive</p>
+  </header>
+
+  <main>
+    <div class="grid">
+
+      <div style="position:relative;">
+        <div class="circle active" id="A">A</div>
+        <div class="tooltip" style="left:-180px; top:20px;">
+          <div style="font-size:0.9em; margin-bottom:6px;">🔋 82%</div>
+          Latitude: -10.892032<br>
+          Longitude: -77.521890<br>
+          Live pov -
+          <img src="robber.png" />
+        </div>
+        <div class="label" id="A-label">🔧 A sensor: Active ⚙️</div>
+      </div>
+
+      <div style="position:relative;">
+        <div class="circle locked" id="B">B</div>
+        <div class="tooltip" style="left:-180px; top:20px;">
+          Latitude: -10.892501<br>
+          Longitude: -77.521860<br>
+          Live pov -
+          <img src="animal.png" />
+        </div>
+
+        <div class="label">🔧 B sensor: Motor not detected ⚙️</div>
+      </div>
+
+      <div style="position:relative;">
+        <div class="circle inactive" id="C">C</div>
+        <div class="tooltip" style="left:-180px; top:20px;">
+          <div style="font-size:0.9em; margin-bottom:6px;">🪫 20%</div>
+          Latitude: -10.892380<br>
+          Longitude: -77.521672<br>
+          Live pov -
+          <img src="animal.png" />
+        </div>
+        <div class="label" id="C-label">🔧 C sensor: Inactive ⚙️</div>
+      </div>
+
+      <div style="position:relative;">
+        <div class="circle active" id="D">D</div>
+        <div class="tooltip" style="left:-180px; top:20px;">
+          <div style="font-size:0.9em; margin-bottom:6px;">🔋 79%</div>
+          Latitude -10.892040<br>
+          Longitude -77.521890<br>
+          Live pov -
+          <img src="bird.png" />
+        </div>
+        <div class="label" id="D-label">🔧 D sensor: Active ⚙️</div>
+      </div>
+
+    </div>
+  </main>
+
+<footer>
+  <h3>Learn More from Trusted Sources</h3>
+  <div class="link-grid">
+    <a href="https://courier.unesco.org/en/articles/archaeology-living-past" target="_blank">UNESCO Heritage Protection</a> 
+    <a href="https://www.archaeological.org" target="_blank">Archaeological Institute of America</a>
+    <a href="https://www.iccrom.org" target="_blank">ICCROM</a>
+    <a href="https://www.smithsonianmag.com/history/" target="_blank">Smithsonian History</a>
+    <a href="https://www.nationalgeographic.com/history/" target="_blank">National Geographic History</a>
+  </div>
+    <p>Images in the public domain.</p>
+    <p>© 2025 Protecting Our Past Project | Built with ❤️ by Power Surge Blast Robotics</p>
+</footer>
+
+<script>
+// Track which tooltip is currently shown on mobile
+let activeMobileTooltip = null;
+
+// Helper function to check if device is mobile
+function isMobileDevice() {
+  return window.innerWidth <= 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
+
+// Toggle active/inactive
+function toggle(id, event) {
+  const circle = document.getElementById(id);
+  const label = document.getElementById(id + "-label");
+  const tooltip = circle.parentElement.querySelector('.tooltip');
+  
+  if (circle.classList.contains("locked")) return;
+
+  const active = circle.classList.contains("active");
+  circle.classList.toggle("active", !active);
+  circle.classList.toggle("inactive", active);
+
+  label.textContent = active
+    ? `🔧 ${id} sensor: Inactive ⚙️`
+    : `🔧 ${id} sensor: Active ⚙️`;
+
+  // Immediately update tooltip visibility based on new state
+  if (active) {
+    // Just changed to inactive - hide tooltip immediately
+    tooltip.classList.remove('show');
+    if (activeMobileTooltip === tooltip) {
+      activeMobileTooltip = null;
+    }
+  } else {
+    // Just changed to active
+    if (isMobileDevice()) {
+      // On mobile, don't auto-show after toggle (user taps again to see tooltip)
+      tooltip.classList.remove('show');
+    } else {
+      // On desktop, show tooltip if mouse is hovering or if this was a click
+      // Use a small delay to check hover state after DOM update
+      setTimeout(() => {
+        if (circle.classList.contains("active")) {
+          // Check if mouse is over the element or if this was a recent click
+          if (circle.matches(':hover') || circle.dataset.justClicked === 'true') {
+            tooltip.classList.add('show');
+            delete circle.dataset.justClicked;
+          }
+        }
+      }, 10);
+    }
+  }
+  
+  if (event) {
+    event.stopPropagation();
+  }
+}
+
+// Setup sensors A, C, D
+["A", "C", "D"].forEach(id => {
+  const circle = document.getElementById(id);
+  const tooltip = circle.parentElement.querySelector('.tooltip');
+  let touchStartTime = 0;
+  let touchMoved = false;
+  let toggleHandled = false;
+
+  // Desktop: Show tooltip on hover if active
+  circle.addEventListener('mouseenter', () => {
+    if (circle.classList.contains("active") && !circle.classList.contains("locked")) {
+      tooltip.classList.add('show');
+    }
+  });
+
+  circle.addEventListener('mouseleave', () => {
+    // On desktop, hide tooltip when mouse leaves (unless just clicked)
+    if (!isMobileDevice()) {
+      // Small delay to allow click event to process first
+      setTimeout(() => {
+        if (!circle.matches(':hover') && circle.dataset.justClicked !== 'true') {
+          tooltip.classList.remove('show');
+        }
+        // Clear the justClicked flag after a moment
+        if (circle.dataset.justClicked === 'true') {
+          setTimeout(() => {
+            delete circle.dataset.justClicked;
+          }, 100);
+        }
+      }, 50);
+    }
+  });
+
+  // Click handler (desktop)
+  circle.addEventListener("click", (e) => {
+    if (!isMobileDevice()) {
+      // Mark that we just clicked so tooltip can show after toggle
+      circle.dataset.justClicked = 'true';
+      toggle(id, e);
+    }
+  });
+
+  // Mobile touch handlers
+  circle.addEventListener('touchstart', (e) => {
+    if (circle.classList.contains("locked")) return;
+    touchStartTime = Date.now();
+    touchMoved = false;
+    toggleHandled = false;
+  }, { passive: true });
+
+  circle.addEventListener('touchmove', () => {
+    touchMoved = true;
+  }, { passive: true });
+
+  circle.addEventListener('touchend', (e) => {
+    const touchDuration = Date.now() - touchStartTime;
+    const isQuickTap = touchDuration < 300 && !touchMoved;
+
+    if (isQuickTap && !toggleHandled) {
+      // Quick tap: toggle sensor state
+      e.preventDefault();
+      toggle(id, e);
+      toggleHandled = true;
+      
+      // If now active, show tooltip after a brief delay
+      setTimeout(() => {
+        if (circle.classList.contains("active")) {
+          // Hide any other open tooltip
+          if (activeMobileTooltip && activeMobileTooltip !== tooltip) {
+            activeMobileTooltip.classList.remove('show');
+          }
+          tooltip.classList.add('show');
+          activeMobileTooltip = tooltip;
+        } else {
+          tooltip.classList.remove('show');
+          if (activeMobileTooltip === tooltip) {
+            activeMobileTooltip = null;
+          }
+        }
+      }, 100);
+    } else if (!toggleHandled && circle.classList.contains("active")) {
+      // Longer press or after toggle: toggle tooltip visibility
+      e.preventDefault();
+      if (tooltip.classList.contains('show')) {
+        tooltip.classList.remove('show');
+        if (activeMobileTooltip === tooltip) {
+          activeMobileTooltip = null;
+        }
+      } else {
+        // Hide any other open tooltip
+        if (activeMobileTooltip && activeMobileTooltip !== tooltip) {
+          activeMobileTooltip.classList.remove('show');
+        }
+        tooltip.classList.add('show');
+        activeMobileTooltip = tooltip;
+      }
+    }
+  }, { passive: false });
+});
+
+// Hide tooltips when tapping outside (mobile)
+document.addEventListener('touchstart', (e) => {
+  if (isMobileDevice() && activeMobileTooltip) {
+    const clickedCircle = e.target.closest('.circle');
+    const clickedTooltip = e.target.closest('.tooltip');
+    
+    if (!clickedCircle && !clickedTooltip) {
+      activeMobileTooltip.classList.remove('show');
+      activeMobileTooltip = null;
+    }
+  }
+}, { passive: true });
+
+// Hide tooltips when clicking outside (desktop)
+document.addEventListener('click', (e) => {
+  if (!isMobileDevice()) {
+    if (!e.target.closest('.circle') && !e.target.closest('.tooltip')) {
+      document.querySelectorAll('.tooltip').forEach(tooltip => {
+        tooltip.classList.remove('show');
+      });
+    }
+  }
+});
+
+// B sensor — NEVER show tooltip
+const Bcircle = document.getElementById('B');
+const Btooltip = Bcircle.parentElement.querySelector('.tooltip');
+Btooltip.classList.remove('show');
+
+Bcircle.addEventListener('mouseenter', () => { 
+  Btooltip.classList.remove('show');
+});
+
+Bcircle.addEventListener('mouseleave', () => { 
+  Btooltip.classList.remove('show');
+});
+
+Bcircle.addEventListener('touchstart', () => {
+  Btooltip.classList.remove('show');
+  if (activeMobileTooltip === Btooltip) {
+    activeMobileTooltip = null;
+  }
+}, { passive: true });
+
+// Notification only triggers when C becomes active
+const Ccircle = document.getElementById("C");
+const notifBox = document.getElementById("notif");
+
+Ccircle.addEventListener("click", () => {
+  if (!isMobileDevice()) {
+    if (Ccircle.classList.contains("active")) {
+      notifBox.style.display = "block";
+      setTimeout(() => { notifBox.style.display = "none"; }, 4000);
+    }
+  }
+});
+
+Ccircle.addEventListener("touchend", () => {
+  if (isMobileDevice()) {
+    if (Ccircle.classList.contains("active")) {
+      notifBox.style.display = "block";
+      setTimeout(() => { notifBox.style.display = "none"; }, 4000);
+    }
+  }
+});
+</script>
+
+
+
+</body>
+</html>
+ 

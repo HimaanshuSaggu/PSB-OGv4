@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vanishing History | Our Past</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      margin: 0;
+      background: linear-gradient(180deg, #ffffff, #ffffff);
+      color: #333;
+      line-height: 1.7;
+    }
+
+    nav {
+      background: linear-gradient(to right, #ff8400, #ffac53);
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 15px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: white;
+      padding: 10px 20px;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #37474f;
+    }
+
+    header {
+      background: linear-gradient(to right, #ff8400, #ffac53);
+      color: white;
+      text-align: center;
+      padding: 20px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 2em;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 1.3em;
+      opacity: 0.9;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 50px auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 40px 30px;
+      border: 4px solid #ffac53; /* orange border */
+    }
+
+    main:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+      transition: all 0.3s ease;
+    }
+
+    h2 {
+      font-family: "Times New Roman", Times, serif;
+      color: #37474f;
+      border-bottom: 3px solid #b0bec5;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    p {
+      font-size: 1.05em;
+      margin-bottom: 15px;
+    }
+
+    .image-box {
+      text-align: center;
+      margin: 25px 0;
+    }
+
+    .image-box img {
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    footer {
+      background-color: #ffb770;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    footer h3 {
+      font-family: "Times New Roman", Times, serif;
+      margin-bottom: 20px;
+    }
+
+    .link-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .link-grid a {
+      display: inline-block;
+      text-decoration: none;
+      background-color: #fa9b00;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+      font-weight: 500;
+    }
+
+    .link-grid a:hover {
+      background-color: #37474f;
+    }
+
+    footer p {
+      font-size: 0.9em;
+      opacity: 0.85;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 768px) {
+      /* Navbar mobile optimization */
+      nav {
+        padding: 8px 5px;
+        gap: 5px;
+      }
+
+      nav a {
+        padding: 6px 10px;
+        font-size: 0.85em;
+      }
+
+      /* Header mobile optimization */
+      header {
+        padding: 12px 15px;
+      }
+
+      header h1 {
+        font-size: 1.4em;
+        margin-bottom: 3px;
+      }
+
+      header p {
+        font-size: 1.1em;
+      }
+
+      /* Main content mobile optimization */
+      main {
+        margin: 20px 15px;
+        padding: 20px 15px;
+      }
+
+      /* Images mobile optimization - override fixed dimensions */
+      .image-box {
+        width: 100%;
+        overflow: hidden;
+        margin: 15px 0;
+        display: block;
+        box-sizing: border-box;
+      }
+
+      /* Override all image dimensions on mobile - very aggressive */
+      main img,
+      section img,
+      .image-box img,
+      img[width],
+      img[height],
+      img[width][height] {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        max-height: none !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        display: block !important;
+        aspect-ratio: auto !important;
+        border-radius: 10px;
+        box-sizing: border-box !important;
+      }
+
+      /* Specifically target the first image that's causing issues */
+      section:first-of-type .image-box img,
+      section:first-of-type img {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        object-fit: contain !important;
+      }
+
+      /* Disable hover effects on mobile */
+      main:hover {
+        transform: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="ourpast.html">Our Past</a>
+    <a href="looting.html">Looting</a>
+    <a href="vandalism.html">Vandalism</a>
+    <a href="protecting.html">Protecting</a>
+    <a href="solution.html">Proposed Solution</a>
+    <a href="live-gallery.html">New Images</a>
+    <a href="sensors.html">Sensor Status</a>
+    <a href="about.html">About Us</a>
+  </nav>
+
+  <header>
+    <h1>Vanishing History</h1>
+    <p>Understanding Our Past to Protect the Future</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Our Past Is Irreplaceable</h2>
+      <p>
+        Every archaeological site and artifact represents a fragment of human history. Excavations reveal the cultural, social, and technological achievements of civilizations long gone. By studying these remnants, we understand how societies evolved, traded, and interacted with their environment.
+      </p>
+      <p>
+        The theft or destruction of artifacts disrupts this knowledge forever. Objects removed from context lose the stories they carry, and generations are robbed of the opportunity to learn from the past.
+      </p>
+      <div class="image-box">
+<img src="ImgTwo.jpg" alt="Ancient archaeological site" width="512" height="309">
+      </div>
+    </section>
+
+    <section>
+      <h2>Why Preservation Matters</h2>
+      <p>
+        Archaeology is more than collecting artifacts; it is about preserving knowledge. Every piece of pottery, tool, or inscription provides clues about daily life, belief systems, and societal organization. Protecting sites ensures this information remains intact for research and education.
+      </p>
+      <p>
+        International collaboration, community engagement, and education play crucial roles in safeguarding these treasures. Responsible tourism and ethical museum practices further strengthen preservation efforts.
+      </p>
+      <div class="image-box">
+        <img src="ImgFour.jpg" alt="Archaeologists at work height="750" width="471">
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <h3>Learn More from Trusted Sources</h3>
+    <div class="link-grid">
+      <a href="https://courier.unesco.org/en/articles/archaeology-living-past" target="_blank">UNESCO Heritage Protection</a> 
+      <a href="https://www.archaeological.org" target="_blank">Archaeological Institute of America</a>
+      <a href="https://www.iccrom.org" target="_blank">ICCROM</a>
+      <a href="https://www.smithsonianmag.com/history/" target="_blank">Smithsonian History</a>
+      <a href="https://www.nationalgeographic.com/history/" target="_blank">National Geographic History</a>
+    </div>
+      <p>PImages in the public domain.</p>
+    <p>© 2025 Protecting Our Past Project | Built with ❤️ by Power Surge Blast Robotics</p>
+  </footer>
+
+  <script>
+    // Remove width and height attributes from images on mobile to prevent stretching
+    if (window.innerWidth <= 768) {
+      const images = document.querySelectorAll('img[width][height]');
+      images.forEach(img => {
+        img.removeAttribute('width');
+        img.removeAttribute('height');
+      });
+    }
+
+    // Re-run on resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth <= 768) {
+        const images = document.querySelectorAll('img[width][height]');
+        images.forEach(img => {
+          img.removeAttribute('width');
+          img.removeAttribute('height');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

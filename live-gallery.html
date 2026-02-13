@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanishing History | Live Gallery</title>
+<link rel="icon" type="image/png" href="icon.png">
+<style>
+body {
+  margin:0;
+  font-family: "Times New Roman", Times, serif;
+  background: #fff;
+  color: #000;
+  transition: background 0.3s, color 0.3s;
+}
+
+nav {
+  background: linear-gradient(to right, #ff8400, #ffac53);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 15px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  padding: 10px 20px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+nav a:hover {
+  background-color: #37474f;
+}
+
+.page-header {
+  background: linear-gradient(to right, #ff8400, #ffac53);
+  color: white;
+  text-align: center;
+  padding: 30px 20px 10px 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  border-radius: 8px;
+}
+.page-header h1, .page-header h2 {
+  color: white;
+}
+
+/* Gallery */
+main {
+  max-width: 1400px;
+  margin: 50px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0 20px;
+}
+.image-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #f0f0f0;
+  text-align: center;
+  cursor: pointer;
+  display:flex;
+  flex-direction: column;
+  justify-content:flex-end;
+  min-height: 250px;
+  transition: transform 0.3s;
+}
+.image-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 15px;
+  display:block;
+  transition: transform 0.3s, border-radius 0.3s;
+}
+.image-card.loading img { visibility: hidden; }
+.image-card.loading::before {
+  content:"";
+  display:block;
+  width:40px; height:40px;
+  margin:calc(50% - 20px) auto 10px auto;
+  border-radius:50%;
+  border:5px solid #ffa500;
+  border-top:5px solid #ff8400;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.image-card .datetime {
+  font-size: 0.9em;
+  padding:5px;
+  background: rgba(255,255,255,0.8);
+  border-top: 1px solid #ccc;
+  color: #000;
+}
+body.dark-mode .image-card .datetime {
+  background: rgba(30,30,30,0.8);
+  color: #ddd;
+  border-top: 1px solid #555;
+}
+#overlay {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.95);
+  justify-content:center;
+  align-items:center;
+  z-index: 9999;
+}
+#overlay img { max-width: 95%; max-height: 95%; }
+footer {
+  background: linear-gradient(to right, #ff8400, #ffac53);
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+body.dark-mode footer {
+  background: #111;
+  color: #ddd;
+}
+/* Ensure nav and header retain orange gradient and white text in dark mode */
+body.dark-mode nav {
+  background: #111 !important;
+  color: #ddd !important;
+}
+body.dark-mode nav a {
+  color: #ddd !important;
+}
+body.dark-mode .page-header {
+  background: #222 !important;
+  color: #ddd !important;
+}
+body.dark-mode .page-header h1,
+body.dark-mode .page-header h2 {
+  color: #ddd !important;
+}
+body.dark-mode {
+  background: #000 !important;
+  color: #ddd !important;
+}
+body.dark-mode main {
+  background: transparent;
+}
+body.dark-mode .image-card {
+  background: #111 !important;
+  color: #ddd !important;
+}
+#theme-toggle {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:60px;
+  height:30px;
+  background:#ffa500;
+  border-radius:30px;
+  display:flex;
+  align-items:center;
+  justify-content: space-around;
+  padding:0 5px;
+  cursor:pointer;
+  z-index: 10000;
+}
+#theme-toggle span {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#theme-toggle.dark { background:#222; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="ourpast.html">Our Past</a>
+  <a href="looting.html">Looting</a>
+  <a href="vandalism.html">Vandalism</a>
+  <a href="protecting.html">Protecting</a>
+  <a href="solution.html">Proposed Solution</a>
+  <a href="live-gallery.html">New Images</a>
+  <a href="sensors.html">Sensor Status</a>
+  <a href="about.html">About Us</a>
+</nav>
+
+<header class="page-header">
+  <h1>Live Image Gallery</h1>
+  <h2>Real-Time Monitoring of Protected Archaeological Sites</h2>
+</header>
+
+<main id="gallery"></main>
+<div id="overlay"><img id="overlay-img" src=""></div>
+<div id="theme-toggle">
+  <span class="sun">☀️</span>
+  <span class="moon">🌙</span>
+</div>
+<footer><p>© 2026 Protecting Our Past Project | Built with ❤️ by Power Surge Blast Robotics</p></footer>
+
+<script>
+const gallery = document.getElementById("gallery");
+const overlay = document.getElementById("overlay");
+const overlayImg = document.getElementById("overlay-img");
+const filesUrl = "http://192.168.1.3/files/";
+
+async function loadImages() {
+  const res = await fetch(filesUrl);
+  const text = await res.text();
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text,"text/html");
+  const links = [...doc.querySelectorAll("a")].map(a=>a.getAttribute("href"));
+  let imgs = links.filter(l=>l.match(/\.(jpg|png)$/i));
+  imgs = imgs.sort((a,b)=>b.localeCompare(a));
+
+  imgs.forEach(src=>{
+    const card = document.createElement("div");
+    card.className = "image-card loading";
+    const img = document.createElement("img");
+    img.src = filesUrl + src;
+    const match = src.match(/capture(\d+)\.?/);
+    let datetimeText = "Invalid date";
+    if(match){
+      const ts = parseInt(match[1])*1000;
+      const d = new Date(ts);
+      const h = d.getHours();
+      const m = d.getMinutes();
+      const timeStr = `${h}:${m<10?'0'+m:m}`;
+      const dateStr = `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear().toString().slice(-2)}`;
+      datetimeText = `${timeStr} | ${dateStr}`;
+    }
+    const dt = document.createElement("div");
+    dt.className = "datetime";
+    dt.textContent = datetimeText;
+    img.onload = ()=>{ card.classList.remove("loading"); };
+    img.onerror = ()=>{ dt.textContent="Loading..."; };
+    card.appendChild(img);
+    card.appendChild(dt);
+    card.addEventListener("click", ()=>{ if(!card.classList.contains("loading")){ overlayImg.src = img.src; overlay.style.display="flex"; }});
+    gallery.appendChild(card);
+  });
+}
+loadImages();
+overlay.addEventListener("click", ()=> overlay.style.display="none");
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") overlay.style.display="none"; });
+const toggle = document.getElementById("theme-toggle");
+toggle.addEventListener("click", ()=>{
+  document.body.classList.toggle("dark-mode");
+  toggle.classList.toggle("dark");
+  // No inline background or color overrides: navbar and header colors always set by CSS
+});
+</script>
+</body>
+</html>
